@@ -1,0 +1,87 @@
+{
+  "name": "FileAppValidationFlow",
+  "id": "12345-abcde",
+  "type": "Microsoft.Flow/flows",
+  "properties": {
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json",
+      "contentVersion": "1.0.0.0",
+      "parameters": {},
+      "triggers": {
+        "manual": {
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {}
+        }
+      },
+      "actions": {
+        "Copy_File": {
+          "type": "FileSystem.CopyFile",
+          "inputs": {
+            "sourcePath": "C:\\Source\\file.txt",
+            "destinationPath": "C:\\Target\\file.txt"
+          },
+          "runAfter": {}
+        },
+        "Extract_Folder": {
+          "type": "FileSystem.ExtractFolder",
+          "inputs": {
+            "sourceZip": "C:\\Target\\archive.zip",
+            "destinationFolder": "C:\\Target\\extracted"
+          },
+          "runAfter": {
+            "Copy_File": ["Succeeded"]
+          }
+        },
+        "Replace_File": {
+          "type": "FileSystem.CopyFile",
+          "inputs": {
+            "sourcePath": "C:\\Replacement\\newfile.txt",
+            "destinationPath": "C:\\Target\\extracted\\file.txt"
+          },
+          "runAfter": {
+            "Extract_Folder": ["Succeeded"]
+          }
+        },
+        "Run_App": {
+          "type": "RunScript",
+          "inputs": {
+            "scriptPath": "scripts\\runApp.bat"
+          },
+          "runAfter": {
+            "Replace_File": ["Succeeded"]
+          }
+        },
+        "Validate_URL": {
+          "type": "Http",
+          "inputs": {
+            "method": "GET",
+            "uri": "https://example.com/health"
+          },
+          "runAfter": {
+            "Run_App": ["Succeeded"]
+          }
+        },
+        "Condition": {
+          "type": "If",
+          "expression": "@equals(body('Validate_URL')?['statusCode'], 200)",
+          "actions": {
+            "Success": {
+              "type": "Compose",
+              "inputs": "Workflow ran successfully"
+            }
+          },
+          "else": {
+            "Failure": {
+              "type": "Compose",
+              "inputs": "Workflow failed"
+            }
+          },
+          "runAfter": {
+            "Validate_URL": ["Succeeded"]
+          }
+        }
+      }
+    }
+  }
+}
