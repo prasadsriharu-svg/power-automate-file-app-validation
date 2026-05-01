@@ -1,0 +1,30 @@
+Project Summary
+This project showcases an automation workflow built with Microsoft Power Automate, supported by batch (.bat) and PowerShell (.ps1) scripts.
+
+Highlights:
+
+File Operations: Copy files, extract folders, and replace target files from alternate sources.
+
+Application Execution: Launches a required application automatically after file preparation.
+
+Validation: Uses a browser step to check a URL response.
+
+Success → HTTP status code 200
+
+Failure → flagged as unsuccessful
+
+Tech Stack:
+
+Microsoft Power Automate
+
+Batch scripting (.bat) for application launch
+
+PowerShell scripting (.ps1) for file handling and HTTP validation
+
+Impact:
+
+Eliminates repetitive manual steps
+
+Ensures reliable execution with automated success/failure tracking
+
+Improves operational efficiency and consistency
